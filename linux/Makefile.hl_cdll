@@ -23,6 +23,8 @@ INCLUDEDIRS=-I$(HL_SRC_DIR) -I$(HL_PARTICLEMAN_DIR) -I../dlls -I$(COMMON_SRC_DIR
 
 ifeq ($(OS),Darwin)
 	LDFLAGS=$(SHLIBLDFLAGS) $(CPP_LIB) -framework Carbon $(CFG)/vgui.dylib -L. -lSDL2-2.0.0
+else ifeq ($(OS),Win32)
+	LDFLAGS=$(SHLIBLDFLAGS) $(CPP_LIB)  -L$(CFG) -lvgui -L. -lSDL2
 else
 	LDFLAGS=$(SHLIBLDFLAGS) $(CPP_LIB)  -L$(CFG) vgui.so -L. libSDL2-2.0.so.0
 endif

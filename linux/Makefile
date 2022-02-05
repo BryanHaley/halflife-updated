@@ -26,6 +26,11 @@ BUILD_OBJ_DIR=$(BUILD_DIR)/obj
 ARCH=i386
 ELF-GC-DYNSTR=./elf-gc-dynstr
 
+ifeq ($(OS),Win32)
+	CPLUS="i686-w64-mingw32-g++ -m32"
+	CPP_LIB:=-lstdc++ -lpthread
+endif
+
 ifeq ($(OS),Linux)
 	CPLUS="g++ -m32"
 	CPP_LIB:=-L$(shell g++ -m32 -print-file-name=libstdc++.so | xargs dirname) -lstdc++ -ldl -lpthread
@@ -73,6 +78,12 @@ else
 	ARCH_CFLAGS_AMD64=-m64 -gdwarf-2 -g2 
 endif
 
+ifeq ($(OS),Win32)
+	ARCH_CFLAGS_I486+=-march=pentium-m -mfpmath=387
+	ARCH_CFLAGS_I686+=-march=pentium-m -mfpmath=387
+	ARCH_CFLAGS_AMD+=-march=k6 -mfpmath=387
+endif
+
 ifeq ($(OS),Linux)
 	ARCH_CFLAGS_I486+=-march=pentium-m -mfpmath=387
 	ARCH_CFLAGS_I686+=-march=pentium-m -mfpmath=387
@@ -89,11 +100,13 @@ endif
 
 ARCH_CFLAGS="$(ARCH_CFLAGS_I486)"
 
-BASE_CFLAGS=-std=c++17 -fpermissive -fno-strict-aliasing -DNDEBUG -DPOSIX -D_POSIX -DLINUX -D_LINUX -DGNUC -DNO_MALLOC_OVERRIDE -fno-exceptions -fexpensive-optimizations -Werror=return-type
+BASE_CFLAGS=-std=c++17 -fpermissive -fno-strict-aliasing -DNDEBUG -DGNUC -DNO_MALLOC_OVERRIDE -fno-exceptions -fexpensive-optimizations -Werror=return-type
 BASE_CFLAGS+=-w
 
 ifeq ($(OS),Darwin)
 	BASE_CFLAGS += -DOSX -D_OSX -fvisibility=hidden
+else ifeq ($(OS),Win32)
+	BASE_CFLAGS+=-DPOSIX -DWIN32
 else
 	BASE_CFLAGS+= -DLINUX -D_LINUX
 endif
@@ -106,6 +119,14 @@ ifeq ($(OS),Darwin)
 	else
 		SHLIBLDFLAGS="-shared -gdwarf-2 -g2"
 	endif
+else ifeq ($(OS),Win32)
+	SHLIBEXT=dll
+	SHLIBCFLAGS=
+	ifeq "$(CFG)" "release"
+		SHLIBLDFLAGS="-shared -Wl,-Map,$@_map.txt"
+	else
+		SHLIBLDFLAGS="-shared -gdwarf-2 -g2 -Wl,-Map,$@_map.txt"
+	endif
 else
 	SHLIBEXT=so
 	SHLIBCFLAGS=
@@ -115,9 +136,15 @@ else
 		SHLIBLDFLAGS="-shared -gdwarf-2 -g2 -Wl,-Map,$@_map.txt"
 	endif
 endif
-AR=ar
+
 LIBEXT=a
 MAKE+= -j8
+
+ifeq ($(OS),Win32)
+	AR=i686-w64-mingw32-ar
+else
+	AR=ar
+endif
 
 MAKE_HL_LIB=$(MAKE) -f Makefile.hldll
 MAKE_HL_CDLL=$(MAKE) -f Makefile.hl_cdll

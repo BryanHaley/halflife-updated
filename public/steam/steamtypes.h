@@ -26,7 +26,7 @@
 typedef unsigned char uint8;
 typedef signed char int8;
 
-#if defined( WIN32 )
+#if defined( WIN32 ) && !defined(POSIX)
 
 typedef __int16 int16;
 typedef unsigned __int16 uint16;
