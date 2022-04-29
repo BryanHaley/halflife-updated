@@ -64,6 +64,20 @@ void Fmod_Update(void)
     _Fmod_Result_OK(&result);
 
     _Fmod_Update_Volume();
+
+	// properly update position
+	Vector playerForward, playerUp;
+
+	// Get the forward and up vector
+	gEngfuncs.pfnAngleVectors(gHUD.playerAngles, playerForward, nullptr, playerUp);
+
+	// Converting these Vectors into FMOD vectors
+	FMOD_VECTOR FMODPlayerPosition = _Fmod_HLVecToFmodVec(gHUD.playerOrigin);
+	FMOD_VECTOR FMODPlayerVelocity = _Fmod_HLVecToFmodVec(gHUD.playerSpeed);
+	FMOD_VECTOR FMODPlayerForward = _Fmod_HLVecToFmodVec(playerForward);
+	FMOD_VECTOR FMODPlayerUp = _Fmod_HLVecToFmodVec(playerUp);
+
+	Fmod_Update_Listener_Position(&FMODPlayerPosition, &FMODPlayerVelocity, &FMODPlayerForward, &FMODPlayerUp);
 }
 
 void Fmod_Think(struct ref_params_s* pparams)

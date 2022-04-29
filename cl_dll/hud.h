@@ -630,6 +630,11 @@ public:
 	void AddHudElem(CHudBase* p);
 
 	float GetSensitivity();
+
+	// FMOD related stuff
+	Vector playerSpeed;
+	Vector playerOrigin;
+	Vector playerAngles;
 };
 
 extern CHud gHUD;

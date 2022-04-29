@@ -840,6 +840,10 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	lasttime = pparams->time;
 
 	v_origin = pparams->vieworg;
+
+	VectorCopy(pparams->simvel, gHUD.playerSpeed);
+	VectorCopy(pparams->vieworg, gHUD.playerOrigin);
+	VectorCopy(pparams->viewangles, gHUD.playerAngles);
 }
 
 void V_SmoothInterpolateAngles(float* startAngle, float* endAngle, float* finalAngle, float degreesPerSec)
