@@ -591,3 +591,5 @@ struct CallOnDestroy
 		Function();
 	}
 };
+
+void UTIL_EmitFmodSound(CBaseEntity* entity, const Vector& vecOrigin, const char* soundPath, float volume, float min_atten, float max_atten, float pitch, bool m_fLooping);

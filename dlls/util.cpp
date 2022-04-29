@@ -19,6 +19,7 @@
   Utility code.  Really not optional after all.
 
 */
+#include <string>
 
 #include "extdll.h"
 #include "util.h"
@@ -627,6 +628,26 @@ void UTIL_MakeInvVectors(const Vector& vec, globalvars_t* pgv)
 	SWAP(pgv->v_right.z, pgv->v_up.y, tmp);
 }
 
+void UTIL_EmitFmodSound(CBaseEntity* entity, const Vector& vecOrigin, const char* soundPath, float volume, float min_atten, float max_atten, float pitch, bool m_fLooping)
+{
+	char path[512] = "/sound/";
+	strcat(path, soundPath);
+
+	std::string msg = STRING(entity->pev->targetname) + std::string("\n") + std::string(path);
+	// TODO: Figure out if we can truly only write one string in a message or if I'm doing something wrong
+	MESSAGE_BEGIN(MSG_ALL, gmsgFmodAmb, NULL);
+	WRITE_STRING(msg.c_str());
+	WRITE_BYTE(m_fLooping);
+	WRITE_COORD(vecOrigin.x);
+	WRITE_COORD(vecOrigin.y);
+	WRITE_COORD(vecOrigin.z);
+	// TODO: just use floats here
+	WRITE_COORD(volume);	// Default: 1.0
+	WRITE_COORD(min_atten); // Default: 40.0
+	WRITE_COORD(max_atten); // Default: 40000.0
+	WRITE_COORD(pitch);		// Default: 1.0 (2.0 = one octave up, 0.5 = one octave down)
+	MESSAGE_END();
+}
 
 void UTIL_EmitAmbientSound(edict_t* entity, const Vector& vecOrigin, const char* samp, float vol, float attenuation, int fFlags, int pitch)
 {

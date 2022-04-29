@@ -29,6 +29,7 @@
 #include "common_types.h"
 #include "cl_dll.h"
 #include "ammo.h"
+#include "fmod_manager.h"
 
 #define DHN_DRAWZERO 1
 #define DHN_2DIGITS 2
@@ -378,6 +379,7 @@ public:
 	bool VidInit() override;
 	bool Draw(float flTime) override;
 	void Reset() override;
+	void EmitAmbience(std::string msg, bool looping, FMOD_VECTOR fmod_pos, FMOD_VECTOR vel, float volume, float min_atten, float max_atten, float pitch);
 	bool MsgFunc_FmodCache(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_FmodAmb(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_FmodTrk(const char* pszName, int iSize, void* pbuf);
